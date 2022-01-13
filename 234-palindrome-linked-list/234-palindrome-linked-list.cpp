@@ -11,26 +11,14 @@
 class Solution {
 public:
     bool isPalindrome(ListNode* head) {
-        ListNode* k;
-        k = head; 
-        stack<ListNode> st1; 
-        while (k != nullptr){
-            st1.push(*k);
-            k = k->next; 
-        }
-        k = head; 
-        while (!st1.empty() && k != nullptr){
-            ListNode tt = st1.top(); 
-            if (tt.val == k->val){
-                st1.pop(); k= k->next; 
-            }
-            else {
-                return false;
-            }
-        }
-        if (!st1.empty()) return false;
-        if (k != nullptr) return false;
-        return true;
-        
+     return helper(&head, head);  
+    }
+    bool helper(ListNode** left, ListNode* right){
+        if (right == nullptr) return true;
+        bool isP = helper(left, right->next);
+        if (isP == false){return false;}
+        bool isP1 = right->val == (*left)->val;
+        *left = (*left)->next;
+        return isP1; 
     }
 };
