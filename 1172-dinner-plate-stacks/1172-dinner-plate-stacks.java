@@ -1,52 +1,49 @@
 class DinnerPlates {
-     Stack<Stack<Integer>> stacks;
-    TreeSet<Integer> set = new TreeSet<>();
-
-    private int cap;
+        TreeSet<Integer> filledStacks = new TreeSet<>();
+    TreeSet<Integer> emptyStacks = new TreeSet<>();
+    List<Stack<Integer>> stacks;
+    int capacity;
+    int count = 0;
 
     public DinnerPlates(int capacity) {
-        this.cap = capacity;
-        stacks = new Stack<>();
+        this.stacks = new ArrayList<>();
+        this.capacity = capacity;
+        stacks.add(new Stack<>());
+        emptyStacks.add(0);
     }
-
+    
     public void push(int val) {
-        if (set.size() != 0) {
-            int idx = set.iterator().next();
-            stacks.get(idx).push(val);
-            if (stacks.get(idx).size() == cap) {
-                set.remove(idx);
-            }
-        } else {
-            if (stacks.isEmpty() || stacks.peek().size() == cap) {
-                stacks.add(new Stack<>());
-                stacks.peek().add(val);
-            } else {
-                stacks.peek().add(val);
-            }
+        int index = emptyStacks.first();
+        stacks.get(index).add(val);
+        filledStacks.add(index);
+        if (stacks.get(index).size() == capacity) {
+            emptyStacks.pollFirst();
+            stacks.add(new Stack<>());
+            emptyStacks.add(stacks.size() - 1);
         }
     }
-
+    
     public int pop() {
-        if (!stacks.isEmpty()) {
-            int k = stacks.peek().pop();
-            while (!stacks.isEmpty() && stacks.peek().isEmpty()) {
-                set.remove(stacks.size() - 1);
-                                stacks.pop();
-            }
-            return k;
-        }
-        return -1;
+        if (filledStacks.isEmpty())
+            return -1;
+        int index = filledStacks.last();
+        return popAtStack(index);
     }
-
+    
     public int popAtStack(int index) {
-        if (index >= stacks.size() || stacks.get(index).size() == 0) {
+        if(index >= stacks.size())
+            return -1;
+        Stack<Integer> stack = stacks.get(index);
+        if (stack.isEmpty()) {
             return -1;
         }
-        if (index == stacks.size() - 1) {
-            return this.pop();
+        int value = stack.pop();
+        if (stack.size() != capacity) {
+            emptyStacks.add(index);
         }
-        set.add(index);
-        return stacks.get(index).pop();
+        if(stack.isEmpty()) {
+            filledStacks.remove(index);
+        }
+        return value;
     }
-
 }
